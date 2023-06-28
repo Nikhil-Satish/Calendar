@@ -12,6 +12,9 @@ import DatePicker from "react-datepicker";
 import enUS from 'date-fns/locale/en-US'
 import moment from 'moment';
 import "react-datepicker/dist/react-datepicker.css";
+import withDragAndDrop, {withDragAndDropProps} from 'react-big-calendar/lib/addons/dragAndDrop';
+
+const DnDCalendar = withDragAndDrop(Calendar);
 
 const locales = {
   'en-US': enUS,
@@ -33,6 +36,7 @@ const events = [
         // end: new Date(2023, 5, 22),
         start: moment('2023-06-22T10:00:00').toDate(),
         end:moment('2023-06-22T11:00:00').toDate()
+      
         // start:moment().format('June 24th 2023, 10:00:00 '),
         // end:moment().format('June 24th 2023, 11:00:00 ')
     },
@@ -54,6 +58,40 @@ function App() {
   function handleAddEvent(){
     setAllEvents(...allEvents, newEvent)
   }
+  function moveEvent(event, start, end){
+    const idx = events.indexOf(event);
+    const updatedEvent = { ...event, start, end };
+
+    // const nextEvents = [...events];
+    setNewEvent(updatedEvent);
+    handleAddEvent();
+    // nextEvents.splice(idx, 1, updatedEvent);
+  }
+  // moveEvent({ event, start, end }) {
+  //   const { events } = this.state;
+
+  //   const idx = events.indexOf(event);
+  //   const updatedEvent = { ...event, start, end };
+
+  //   const nextEvents = [...events];
+  //   nextEvents.splice(idx, 1, updatedEvent);
+
+  //   this.setState({
+  //     events: nextEvents
+  //   });
+  // }
+  // const onEventDrop = ({event, start, end, isAllDay}) => {
+  //   const updatedEvent = {...event, start, end, isAllDay};
+  //   // Any other logic. If async saving your change, you'll probably
+  //   // do the next line in a `.then()`
+  //   setAllEvents((prevEvents) => {
+  //     const filtered = prevEvents.filter((item) => item.id !== event.id);
+  //     return [...filtered, updatedEvent];
+  //   });
+  // };
+  // const onEventDrop = withDragAndDropProps['onEventDrop'] = data => {
+  //   console.log(data)
+  // }
   return (
     <div className="App">
       <h1>Calendar</h1>
@@ -64,7 +102,7 @@ function App() {
         <DatePicker placeholderText='End Date' style={{marginRight:"10px"}} selected={newEvent.end} onChange={(end)=>setNewEvent({...newEvent, end})} />
         <button style={{matginTop: "10px"}} onClick={handleAddEvent}>Add event</button>
       </div>
-      <Calendar localizer={localizer} events = {events} startAccessor="start" endAccessor="end" style = {{height:500, margin:"50px"}} />
+      <DnDCalendar localizer={localizer} events = {events} startAccessor="start" onEventDrop={moveEvent} endAccessor="end" style = {{height:500, margin:"50px"}} />
     </div>
   );
 }
